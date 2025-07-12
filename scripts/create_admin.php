@@ -7,14 +7,18 @@ try {
     $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ?');
     $stmt->execute(['admin']);
     if ($stmt->fetchColumn() > 0) {
-        echo "User 'admin' already exists.\n";
+        // reset password
+        $hash = password_hash('password', PASSWORD_BCRYPT);
+        $update = $pdo->prepare('UPDATE users SET password = ? WHERE username = ?');
+        $update->execute([$hash, 'admin']);
+        echo "User 'admin' password reset to 'password'.\n";
         exit;
     }
 
-    $hash = password_hash('admin123', PASSWORD_BCRYPT);
+    $hash = password_hash('password', PASSWORD_BCRYPT);
     $stmt = $pdo->prepare('INSERT INTO users (username, password, role) VALUES (?,?,?)');
     $stmt->execute(['admin', $hash, 'admin']);
-    echo "Admin user created with password 'admin123'.\n";
+    echo "Admin user created with password 'password'.\n";
 } catch (Exception $e) {
     echo 'Error: ' . $e->getMessage() . "\n";
     exit(1);
