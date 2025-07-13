@@ -11,108 +11,317 @@ $tokenModel = new ApiToken();
 $userModel = new User();
 $errors = [];
 $success = null;
+$newToken = null;
 
 // creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create') {
     $userId = (int)($_POST['user_id'] ?? 0);
+    $description = trim($_POST['description'] ?? '');
     $expires = $_POST['expires_at'] ?? null;
 
     if (!$userId) {
-        $errors[] = 'Utilisateur obligatoire.';
+        $errors[] = 'Le choix d\'un utilisateur est obligatoire.';
     }
-    if (!$errors) {
-        $token = $tokenModel->create($userId, null, $expires ?: null);
-        if ($token) {
-            $success = 'Jeton créé : ' . $token;
-        } else {
-            $errors[] = 'Erreur lors de la création.';
+    if (!$description) {
+        $errors[] = 'La description est obligatoire pour identifier le jeton.';
+    }
+
+    if (empty($errors)) {
+        try {
+            $token = $tokenModel->create($userId, $description, $expires ?: null);
+            if ($token) {
+                // Stocker le nouveau jeton dans la session pour l'afficher une seule fois
+                flash('new_token', $token);
+                flash('success', 'Le jeton a été créé avec succès. Copiez-le maintenant, il ne sera plus affiché.');
+                header('Location: token_list.php');
+                exit();
+            } else {
+                $errors[] = 'Erreur inattendue lors de la création du jeton.';
+            }
+        } catch (Exception $e) {
+            $errors[] = 'Erreur de base de données: ' . $e->getMessage();
         }
     }
 }
 
 // delete
 if (isset($_GET['delete'])) {
-    $token = $_GET['delete'];
-    $tokenModel->deleteByToken($token);
+    $tokenId = (int)$_GET['delete'];
+    if ($tokenModel->deleteById($tokenId)) {
+        flash('success', 'Le jeton a été révoqué avec succès.');
+    } else {
+        flash('error', 'Impossible de révoquer le jeton.');
+    }
     header('Location: token_list.php');
     exit();
 }
 
 $tokens = $tokenModel->getAll();
 $users  = $userModel->getAll();
+
+// Récupérer les messages flash
+$success = flash('success');
+$newToken = flash('new_token');
+$errorFlash = flash('error');
+if ($errorFlash) {
+    $errors[] = $errorFlash;
+}
+
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="h-full bg-gray-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jetons API</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../../assets/css/app.css" rel="stylesheet">
+    <title>Gestion des Tokens API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/modern.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            font-weight: 500;
+            color: #4b5563; /* text-gray-600 */
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #eff6ff; /* bg-blue-50 */
+            color: #2563eb; /* text-blue-600 */
+        }
+        .sidebar-link i {
+            width: 1.25rem; /* w-5 */
+            margin-right: 0.75rem; /* mr-3 */
+        }
+    </style>
 </head>
-<body>
-<?php include 'navbar.php'; ?>
-<div class="container my-4">
-    <h3 class="mb-4">Gestion des jetons API</h3>
+<body class="h-full">
 
-    <?php if ($success): ?>
-        <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
-    <?php endif; ?>
-    <?php if ($errors): ?>
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                <?php foreach ($errors as $e): ?><li><?= htmlspecialchars($e) ?></li><?php endforeach; ?>
-            </ul>
+<div class="flex h-screen bg-gray-100">
+    <!-- Barre latérale -->
+    <aside class="w-64 bg-white shadow-lg hidden md:block">
+        <div class="p-6 flex items-center">
+            <a href="dashboard.php" class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-newspaper mr-3 text-blue-600"></i>
+                <span>Admin Panel</span>
+            </a>
         </div>
-    <?php endif; ?>
+        <nav class="mt-4">
+            <a href="dashboard.php" class="sidebar-link">
+                <i class="fas fa-tachometer-alt"></i> Tableau de bord
+            </a>
+            <a href="article_list.php" class="sidebar-link">
+                <i class="fas fa-file-alt"></i> Articles
+            </a>
+            <a href="category_list.php" class="sidebar-link">
+                <i class="fas fa-tags"></i> Catégories
+            </a>
+            <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                <a href="user_list.php" class="sidebar-link">
+                    <i class="fas fa-users"></i> Utilisateurs
+                </a>
+                <a href="token_list.php" class="sidebar-link active">
+                    <i class="fas fa-key"></i> Tokens API
+                </a>
+            <?php endif; ?>
+        </nav>
+        <div class="absolute bottom-0 w-full p-4">
+             <a href="../index.php" class="sidebar-link text-sm">
+                <i class="fas fa-arrow-left"></i> Retour au site
+            </a>
+        </div>
+    </aside>
 
-    <div class="card mb-4">
-        <div class="card-header">Nouveau jeton</div>
-        <div class="card-body">
-            <form method="post" class="row g-3">
-                <input type="hidden" name="action" value="create">
-                <div class="col-md-4">
-                    <select name="user_id" class="form-select" required>
-                        <option value="">-- Utilisateur --</option>
-                        <?php foreach ($users as $u): ?>
-                            <option value="<?= $u['id'] ?>"><?= htmlspecialchars($u['username']) ?> (<?= $u['role'] ?>)</option>
+    <!-- Contenu principal -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Barre de navigation supérieure -->
+        <header class="flex justify-between items-center p-4 sm:p-6 bg-white border-b">
+            <div class="flex items-center">
+                <button id="mobile-menu-button" class="md:hidden mr-4 text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+                <h1 class="text-2xl font-bold text-gray-800">Gestion des Tokens API</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                 <a href="logout.php" class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition duration-300 text-sm font-medium flex items-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    <span class="hidden sm:inline">Déconnexion</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Contenu de la page -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 sm:p-6">
+            <?php if ($success): ?>
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm" role="alert">
+                    <p class="font-bold">Succès</p>
+                    <p><?= htmlspecialchars($success) ?></p>
+                </div>
+            <?php endif; ?>
+            <?php if ($newToken): ?>
+                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 mb-6 rounded-md shadow-sm" role="alert">
+                    <p class="font-bold">Nouveau Jeton API Généré</p>
+                    <p class="mt-2">Veuillez copier ce jeton. Il ne sera plus affiché pour des raisons de sécurité.</p>
+                    <div class="mt-3 flex items-center bg-gray-200 p-2 rounded-md">
+                        <input type="text" id="new-token-input" value="<?= htmlspecialchars($newToken) ?>" class="flex-grow bg-transparent text-sm font-mono focus:outline-none" readonly>
+                        <button onclick="copyToken()" class="ml-4 text-gray-600 hover:text-blue-600">
+                            <i class="far fa-copy fa-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <?php if (!empty($errors)): ?>
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow-sm" role="alert">
+                    <p class="font-bold">Erreur</p>
+                    <ul class="list-disc list-inside mt-2">
+                        <?php foreach ($errors as $e): ?>
+                            <li><?= htmlspecialchars($e) ?></li>
                         <?php endforeach; ?>
-                    </select>
+                    </ul>
                 </div>
-                <div class="col-md-4">
-                    <input type="datetime-local" name="expires_at" class="form-control" placeholder="Expiration (optionnelle)">
-                </div>
-                <div class="col-md-2 d-grid">
-                    <button class="btn btn-primary">Générer</button>
-                </div>
-            </form>
-        </div>
-    </div>
+            <?php endif; ?>
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-light">
-            <tr>
-                <th>Token</th>
-                <th>Utilisateur</th>
-                <th>Expire le</th>
-                <th>Créé le</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($tokens as $t): ?>
-                <tr>
-                    <td class="text-break" style="max-width: 300px;"><?= htmlspecialchars($t['token']) ?></td>
-                    <td><?= htmlspecialchars($t['username']) ?></td>
-                    <td><?= $t['expires_at'] ? date('d/m/Y H:i', strtotime($t['expires_at'])) : '—' ?></td>
-                    <td><?= date('d/m/Y H:i', strtotime($t['created_at'])) ?></td>
-                    <td>
-                        <a href="token_list.php?delete=<?= urlencode($t['token']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce jeton ?');">Supprimer</a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            <!-- Formulaire de création -->
+            <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Générer un nouveau jeton</h2>
+                <form method="post" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                    <input type="hidden" name="action" value="create">
+                    <div class="lg:col-span-1">
+                        <label for="user_id" class="block text-sm font-medium text-gray-700">Utilisateur</label>
+                        <select name="user_id" id="user_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" required>
+                            <option value="">-- Sélectionner --</option>
+                            <?php foreach ($users as $u): ?>
+                                <option value="<?= $u['id'] ?>"><?= htmlspecialchars($u['username']) ?> (<?= $u['role'] ?>)</option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                     <div class="lg:col-span-1">
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <input type="text" name="description" id="description" placeholder="Ex: Clé pour client mobile" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                    </div>
+                    <div class="lg:col-span-1">
+                        <label for="expires_at" class="block text-sm font-medium text-gray-700">Date d'expiration (optionnel)</label>
+                        <input type="datetime-local" name="expires_at" id="expires_at" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                    <div class="lg:col-span-1">
+                        <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-key mr-2"></i> Générer
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Liste des jetons -->
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                 <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Début du jeton</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expire le</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Créé le</th>
+                                <th scope="col" class="relative px-6 py-3">
+                                    <span class="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <?php if (empty($tokens)): ?>
+                                <tr>
+                                    <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                        <i class="fas fa-key fa-3x mb-3"></i>
+                                        <p class="text-lg">Aucun jeton API trouvé.</p>
+                                        <p class="text-sm">Utilisez le formulaire ci-dessus pour en générer un.</p>
+                                    </td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($tokens as $t): ?>
+                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?= htmlspecialchars($t['description']) ?></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><?= htmlspecialchars($t['username']) ?></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono"><?= htmlspecialchars(substr($t['token'], 0, 8)) ?>...</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                            <?= $t['expires_at'] ? date('d/m/Y H:i', strtotime($t['expires_at'])) : '<span class="text-gray-400">Jamais</span>' ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                            <?= date('d/m/Y H:i', strtotime($t['created_at'])) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="?delete=<?= $t['id'] ?>" class="text-red-600 hover:text-red-900" onclick="return confirm('Êtes-vous sûr de vouloir révoquer ce jeton ? Cette action est irréversible.');">Révoquer</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
+
+<!-- Menu mobile -->
+<div id="mobile-menu" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30 hidden">
+    <div class="fixed left-0 top-0 h-full bg-white w-64 shadow-lg p-4 z-40">
+        <button id="close-mobile-menu" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800">
+            <i class="fas fa-times fa-lg"></i>
+        </button>
+        <nav class="mt-12">
+            <a href="dashboard.php" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a>
+            <a href="article_list.php" class="sidebar-link"><i class="fas fa-file-alt"></i> Articles</a>
+            <a href="category_list.php" class="sidebar-link"><i class="fas fa-tags"></i> Catégories</a>
+            <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                <a href="user_list.php" class="sidebar-link"><i class="fas fa-users"></i> Utilisateurs</a>
+                <a href="token_list.php" class="sidebar-link active"><i class="fas fa-key"></i> Tokens API</a>
+            <?php endif; ?>
+            <a href="../index.php" class="sidebar-link mt-8 border-t pt-4"><i class="fas fa-arrow-left"></i> Retour au site</a>
+        </nav>
+    </div>
+</div>
+
+<script>
+    function copyToken() {
+        const tokenInput = document.getElementById('new-token-input');
+        tokenInput.select();
+        tokenInput.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand('copy');
+        alert('Jeton copié dans le presse-papiers !');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+            });
+        }
+
+        if (closeMobileMenuButton) {
+            closeMobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        }
+        
+        if (mobileMenu) {
+            mobileMenu.addEventListener('click', (e) => {
+                if (e.target === mobileMenu) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        }
+    });
+</script>
+
 </body>
 </html>
