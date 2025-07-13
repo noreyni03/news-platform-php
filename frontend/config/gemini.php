@@ -1,0 +1,17 @@
+<?php
+/**
+ * Configuration pour l'API Gemini
+ * 
+ * Pour utiliser l'API Gemini, vous devez :
+ * 1. Obtenir une clé API depuis Google AI Studio
+ * 2. Définir la variable d'environnement GEMINI_API_KEY
+ * 3. Ou modifier directement la valeur ci-dessous
+ */
+
+return [
+    'api_key' => $_ENV['GEMINI_API_KEY'] ?? '', // Clé API Gemini
+    'model' => 'gemini-2.0-flash', // Modèle à utiliser
+    'base_url' => 'https://generativelanguage.googleapis.com/v1beta/models/',
+    'max_tokens' => 1000, // Nombre maximum de tokens pour les réponses
+    'temperature' => 0.7, // Créativité des réponses (0.0 = très factuel, 1.0 = très créatif)
+]; 
