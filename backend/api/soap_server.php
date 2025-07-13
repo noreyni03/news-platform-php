@@ -51,11 +51,19 @@ function getUserById($token, $userId) {
 
 function createUser($token, $userData) {
     global $soapService;
+    // Décoder les données JSON si elles sont sous forme de chaîne
+    if (is_string($userData)) {
+        $userData = json_decode($userData, true);
+    }
     return json_encode($soapService->createUser($token, $userData));
 }
 
 function updateUser($token, $userId, $userData) {
     global $soapService;
+    // Décoder les données JSON si elles sont sous forme de chaîne
+    if (is_string($userData)) {
+        $userData = json_decode($userData, true);
+    }
     return json_encode($soapService->updateUser($token, $userId, $userData));
 }
 
