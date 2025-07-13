@@ -40,6 +40,7 @@ $flash = flash('success');
                 <th>Auteur</th>
                 <th>Publiée</th>
                 <th>Créée le</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -51,6 +52,10 @@ $flash = flash('success');
                     <td><?= htmlspecialchars($a['author_name']) ?></td>
                     <td><?= $a['published'] ? 'Oui' : 'Non' ?></td>
                     <td><?= date('d/m/Y', strtotime($a['created_at'])) ?></td>
+                    <td>
+                        <a href="article_edit.php?id=<?= $a['id'] ?>" class="btn btn-sm btn-warning">Éditer</a>
+                        <a href="article_delete.php?id=<?= $a['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet article ?');">Supprimer</a>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
