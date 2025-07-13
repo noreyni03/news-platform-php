@@ -26,18 +26,7 @@
         </a>
         <div class="flex items-center space-x-4 relative">
             <a href="index.php" class="text-gray-600 hover:text-blue-600 hidden sm:inline">Accueil</a>
-            <!-- Menu Catégories -->
-            <div class="relative">
-                <button id="category-menu-btn" class="text-gray-600 hover:text-blue-600 flex items-center focus:outline-none">
-                    Catégories <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                </button>
-                <ul id="category-menu" class="absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow-lg hidden z-50">
-                    <li><a href="index.php" class="block px-4 py-2 hover:bg-gray-100">Toutes les catégories</a></li>
-                    <?php foreach ($categories as $cat): ?>
-                        <li><a href="index.php?category=<?= $cat['id'] ?>" class="block px-4 py-2 hover:bg-gray-100"><?= htmlspecialchars($cat['name']) ?></a></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
+            <!-- Suppression du menu Catégories ici -->
             <a href="admin/login.php" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center text-sm">
                 <i class="fas fa-sign-in-alt mr-2"></i>Administration
             </a>
@@ -61,9 +50,6 @@
                     <option value="<?= $cat['id'] ?>" <?= isset($_GET['category']) && $_GET['category']==$cat['id'] ? 'selected' : '' ?>><?= htmlspecialchars($cat['name']) ?></option>
                 <?php endforeach; ?>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-            </div>
         </form>
     </div>
 
