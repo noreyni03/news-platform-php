@@ -9,7 +9,7 @@
  */
 
 return [
-    'api_key' => $_ENV['GEMINI_API_KEY'] ?? '', // Clé API Gemini
+    'api_key' => $_ENV['GEMINI_API_KEY'] ?? 'AIzaSyCp4jmmfUmGdmi_aqyTppqFSKTZvMETkL0', // Clé API Gemini
     'model' => 'gemini-2.0-flash', // Modèle à utiliser
     'base_url' => 'https://generativelanguage.googleapis.com/v1beta/models/',
     'max_tokens' => 1000, // Nombre maximum de tokens pour les réponses
