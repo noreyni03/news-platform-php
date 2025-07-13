@@ -22,24 +22,16 @@ $options = [
     'features' => SOAP_SINGLE_ELEMENT_ARRAYS
 ];
 
-// Création du serveur SOAP
-$server = new SoapServer(null, $options);
+// Si l'on ne demande pas simplement le WSDL, on instancie réellement le service SOAP
+if (!isset($_GET['wsdl'])) {
+    // Création du serveur SOAP
+    $server = new SoapServer(null, $options);
 
-// Enregistrement des fonctions du service
-$soapService = new SoapService();
+    // Enregistrement des fonctions du service
+    $soapService = new SoapService();
 
-$server->addFunction([
-    'authenticateUser',
-    'listUsers',
-    'getUserById',
-    'createUser',
-    'updateUser',
-    'deleteUser',
-    'listApiTokens',
-    'generateApiToken',
-    'revokeApiToken',
-    'logoutUser'
-]);
+
+}
 
 // Définition des fonctions SOAP
 function authenticateUser($username, $password) {
@@ -92,6 +84,22 @@ if (!function_exists('revokeApiToken')) {
 function logoutUser($token) {
     global $soapService;
     return json_encode($soapService->logoutUser($token));
+}
+
+// Maintenant que toutes les fonctions sont déclarées, nous pouvons les enregistrer auprès du serveur SOAP
+if (!isset($_GET['wsdl'])) {
+    $server->addFunction([
+        'authenticateUser',
+        'listUsers',
+        'getUserById',
+        'createUser',
+        'updateUser',
+        'deleteUser',
+        'listApiTokens',
+        'generateApiToken',
+        'revokeApiToken',
+        'logoutUser'
+    ]);
 }
 
 

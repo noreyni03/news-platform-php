@@ -43,7 +43,12 @@ try {
         }
     }
 
-    $totalPages = ceil(max(1,$totalCount) / 5);
+    $totalPages = ceil(max(1, $totalCount) / 5);
+
+    // Utilise la nouvelle vue Tailwind pour l'affichage
+    require __DIR__ . '/views/public/home_tailwind.php';
+    // Arrête l'exécution pour éviter que l'ancien template Bootstrap ne s'affiche encore
+    exit;
     
 } catch (Exception $e) {
     // En cas d'erreur, afficher une page d'erreur simple

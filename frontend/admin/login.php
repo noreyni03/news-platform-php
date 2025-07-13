@@ -19,11 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $soap = new \SoapClient('http://localhost/projet-actualite/backend/api/soap_server.php?wsdl');
             $response = $soap->authenticateUser($username, $password);
-            // Le service SOAP peut renvoyer un tableau ou un objet stdClass selon la configuration
-            if (is_array($response)) {
-                $resp = $response;
+
+            // La réponse est un JSON encodé sous forme de chaîne (voir soap_server.php)
+            if (is_string($response)) {
+                $resp = json_decode($response, true);
+            } elseif ($response instanceof stdClass) {
+                // certains environnements SOAP emballent la chaîne dans un objet
+                $resp = json_decode(json_encode($response), true);
             } else {
                 $resp = (array)$response;
+            }
+            if (!is_array($resp)) {
+                $resp = [];
             }
             if (!empty($resp['success'])) {
                 $_SESSION['user'] = (array)($resp['user'] ?? []);
@@ -47,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../../assets/css/app.css" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
 </head>
 <body class="d-flex align-items-center bg-light" style="height:100vh;">
     <div class="container">
