@@ -34,41 +34,67 @@ $server->addFunction([
     'getUserById',
     'createUser',
     'updateUser',
-    'deleteUser'
+    'deleteUser',
+    'listApiTokens',
+    'generateApiToken',
+    'revokeApiToken',
+    'logoutUser'
 ]);
 
 // Définition des fonctions SOAP
 function authenticateUser($username, $password) {
     global $soapService;
-    return $soapService->authenticateUser($username, $password);
+    return json_encode($soapService->authenticateUser($username, $password));
 }
 
 function listUsers($token) {
     global $soapService;
-    return $soapService->listUsers($token);
+    return json_encode($soapService->listUsers($token));
 }
 
 function getUserById($token, $userId) {
     global $soapService;
-    return $soapService->getUserById($token, $userId);
+    return json_encode($soapService->getUserById($token, $userId));
 }
 
 function createUser($token, $userData) {
     global $soapService;
-    return $soapService->createUser($token, $userData);
+    return json_encode($soapService->createUser($token, $userData));
 }
 
 function updateUser($token, $userId, $userData) {
     global $soapService;
-    return $soapService->updateUser($token, $userId, $userData);
+    return json_encode($soapService->updateUser($token, $userId, $userData));
 }
 
 function deleteUser($token, $userId) {
     global $soapService;
-    return $soapService->deleteUser($token, $userId);
+    return json_encode($soapService->deleteUser($token, $userId));
 }
 
-// Gestion des requêtes SOAP
+function listApiTokens($token) {
+    global $soapService;
+    return json_encode($soapService->listApiTokens($token));
+}
+
+function generateApiToken($adminTok, $id, $exp = null) {
+    global $soapService;
+    return json_encode($soapService->generateApiToken($adminTok, $id, $exp));
+}
+
+if (!function_exists('revokeApiToken')) {
+    function revokeApiToken($adminTok, $tok) {
+        global $soapService;
+        return json_encode($soapService->revokeApiToken($adminTok, $tok));
+    }
+}
+
+function logoutUser($token) {
+    global $soapService;
+    return json_encode($soapService->logoutUser($token));
+}
+
+
 try {
     if (isset($_GET['wsdl'])) {
         // Génération du WSDL
@@ -133,6 +159,14 @@ try {
     <message name="DeleteUserResponse">
         <part name="result" type="xsd:string"/>
     </message>
+    
+    <message name="LogoutUserRequest">
+        <part name="token" type="xsd:string"/>
+    </message>
+    
+    <message name="LogoutUserResponse">
+        <part name="result" type="xsd:string"/>
+    </message>
 
     <portType name="ActualitePortType">
         <operation name="authenticateUser">
@@ -163,6 +197,11 @@ try {
         <operation name="deleteUser">
             <input message="tns:DeleteUserRequest"/>
             <output message="tns:DeleteUserResponse"/>
+        </operation>
+        
+        <operation name="logoutUser">
+            <input message="tns:LogoutUserRequest"/>
+            <output message="tns:LogoutUserResponse"/>
         </operation>
     </portType>
 
@@ -201,6 +240,12 @@ try {
         
         <operation name="deleteUser">
             <soap:operation soapAction="deleteUser"/>
+            <input><soap:body use="encoded" namespace="http://localhost/projet-actualite/backend/api/soap_server.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="http://localhost/projet-actualite/backend/api/soap_server.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+        
+        <operation name="logoutUser">
+            <soap:operation soapAction="logoutUser"/>
             <input><soap:body use="encoded" namespace="http://localhost/projet-actualite/backend/api/soap_server.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
             <output><soap:body use="encoded" namespace="http://localhost/projet-actualite/backend/api/soap_server.php" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
         </operation>
