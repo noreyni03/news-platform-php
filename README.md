@@ -153,11 +153,12 @@ Exemple de réponse JSON :
 ### Application Java
 
 ```bash
-# Lancer l'application
-java -jar java-client/target/user-management-client-1.0.0.jar
+# se positionner à la racine du projet
+cd news-platform-php
 
-# Ou avec Maven
-mvn exec:java -Dexec.mainClass="com.actualite.client.UserManagementApp"
+# Et taper la commande
+java --add-opens java.base/java.lang=ALL-UNNAMED \
+-jar java-client/target/user-management-client-1.0.0.jar
 ```
 
 **Fonctionnalités** :
