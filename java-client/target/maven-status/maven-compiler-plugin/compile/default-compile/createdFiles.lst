@@ -1,4 +1,14 @@
-com\actualite\client\UserManagementApp.class
-com\actualite\client\User.class
-com\actualite\client\ActualitePort.class
+com\actualite\App.class
+com\actualite\client\controller\MainController.class
 com\actualite\client\SoapClient.class
+com\actualite\client\ActualitePortType.class
+com\actualite\client\controller\UserFormController.class
+com\actualite\client\controller\UserListController.class
+com\actualite\client\model\User.class
+com\actualite\client\UserManagementApp.class
+com\actualite\client\ActualiteService.class
+com\actualite\client\Main.class
+com\actualite\client\controller\LoginController.class
+com\actualite\client\ActualitePort.class
+com\actualite\client\SessionManager.class
+com\actualite\client\User.class

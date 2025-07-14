@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.actualite.client.controller.UserFormController" hgap="10" vgap="10" alignment="CENTER">
+    <Label text="Nom d'utilisateur:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+    <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+    <Label text="Email:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+    <TextField fx:id="emailField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+    <Label text="Mot de passe:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+    <PasswordField fx:id="passwordField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+    <Label text="Rôle:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+    <ComboBox fx:id="roleCombo" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+    <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1" alignment="CENTER_RIGHT">
+        <Button text="Enregistrer" onAction="#handleSave" />
+        <Button text="Annuler" onAction="#handleCancel" />
+    </HBox>
+</GridPane> 

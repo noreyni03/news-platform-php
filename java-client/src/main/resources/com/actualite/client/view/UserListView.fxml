@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.actualite.client.controller.UserListController" spacing="10" alignment="CENTER">
+    <Label text="Liste des utilisateurs" />
+    <TableView fx:id="userTable" prefWidth="600">
+        <columns>
+            <TableColumn text="ID" fx:id="idColumn" />
+            <TableColumn text="Nom d'utilisateur" fx:id="usernameColumn" />
+            <TableColumn text="Email" fx:id="emailColumn" />
+            <TableColumn text="Rôle" fx:id="roleColumn" />
+            <TableColumn text="Créé le" fx:id="createdAtColumn" />
+        </columns>
+    </TableView>
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Ajouter" onAction="#handleAddUser" />
+        <Button text="Modifier" onAction="#handleEditUser" />
+        <Button text="Supprimer" onAction="#handleDeleteUser" />
+        <Button text="Retour" onAction="#handleBack" />
+    </HBox>
+</VBox> 
