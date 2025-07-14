@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.actualite.client.controller.UsersListController" prefWidth="700" prefHeight="500">
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Utilisateurs" style="-fx-font-size:18px;font-weight:bold;" />
+                <Button text="Créer" onAction="#onCreate" />
+                <Button text="Actualiser" onAction="#onRefresh" />
+                <Button text="Retour" onAction="#onBack" />
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="table" prefWidth="700" prefHeight="450">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50" />
+                <TableColumn fx:id="colUsername" text="Nom d'utilisateur" prefWidth="150" />
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="200" />
+                <TableColumn fx:id="colRole" text="Rôle" prefWidth="100" />
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>
