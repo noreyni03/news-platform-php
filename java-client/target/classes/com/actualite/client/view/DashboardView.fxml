@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.actualite.client.controller.DashboardController" alignment="CENTER" spacing="20" prefWidth="400" prefHeight="300">
+    <children>
+        <Label text="Tableau de bord" style="-fx-font-size:20px;font-weight:bold;" />
+        <Button text="Gestion des utilisateurs" onAction="#onUsers" maxWidth="200" />
+        <Button text="Déconnexion" onAction="#onLogout" maxWidth="200" />
+    </children>
+</VBox>
