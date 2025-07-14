@@ -28,12 +28,20 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.actualite.client.UserManagementApp</mainClass>
+                  <mainClass>com.actualite.client.App</mainClass>
                 </transformer>
               </transformers>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>0.0.8</version>
+        <configuration>
+          <mainClass>com.actualite.client.App</mainClass>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -55,5 +63,6 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javafx.version>21</javafx.version>
   </properties>
 </project>
