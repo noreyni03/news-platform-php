@@ -66,13 +66,20 @@ class Article {
     }
     
     public function getGroupedByCategory($publishedOnly = true) {
-        $whereClause = $publishedOnly ? "WHERE a.published = 1" : "";
-        
+        // Ajouter la condition de publication directement dans la clause ON pour éviter une erreur de syntaxe
+        $articlePublishedCondition = $publishedOnly ? " AND a.published = 1" : "";
+
         $sql = "
-            SELECT c.id as category_id, c.name as category_name, c.description as category_description,
-                   a.id as article_id, a.title, a.summary, a.created_at, u.username as author_name
+            SELECT c.id AS category_id,
+                   c.name AS category_name,
+                   c.description AS category_description,
+                   a.id AS article_id,
+                   a.title,
+                   a.summary,
+                   a.created_at,
+                   u.username AS author_name
             FROM categories c
-            LEFT JOIN articles a ON c.id = a.category_id $whereClause
+            LEFT JOIN articles a ON c.id = a.category_id" . $articlePublishedCondition . "
             LEFT JOIN users u ON a.author_id = u.id
             ORDER BY c.name, a.created_at DESC
         ";
