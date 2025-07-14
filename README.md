@@ -1,5 +1,25 @@
 # Projet d'Architecture Logicielle - Site d'Actualités
 
+## 🤝 Contribution
+
+Pour contribuer au projet :
+
+1. Cloner le repository :
+   ```bash
+   git clone https://github.com/noreyni03/news-platform-php.git
+   cd news-platform-php
+   ```
+2. Créer une branche pour votre fonctionnalité :
+   ```bash
+   git checkout -b nom-de-votre-fonctionnalite
+   ```
+3. Commiter vos changements
+4. Pousser vers la branche :
+   ```bash
+   git push origin nom-de-votre-fonctionnalite
+   ```
+5. Créer une Pull Request depuis GitHub
+
 Ce projet met en œuvre les compétences acquises dans le cours d'architecture logicielle. Il est composé de trois parties principales :
 
 1. **Site Web** - Interface utilisateur pour consulter les articles
@@ -153,11 +173,14 @@ Exemple de réponse JSON :
 ### Application Java
 
 ```bash
-# Lancer l'application
+# Lancer l'application (mode console)
 java -jar java-client/target/user-management-client-1.0.0.jar
 
 # Ou avec Maven
 mvn exec:java -Dexec.mainClass="com.actualite.client.UserManagementApp"
+
+# Lancer l'application avec interface graphique JavaFX :
+java --module-path "temp_javafx/javafx-sdk-17.0.9/lib" --add-modules javafx.controls,javafx.fxml --add-opens java.base/java.lang=ALL-UNNAMED -jar java-client/target/user-management-client-1.0.0.jar
 ```
 
 **Fonctionnalités** :
@@ -165,6 +188,7 @@ mvn exec:java -Dexec.mainClass="com.actualite.client.UserManagementApp"
 - Liste des utilisateurs
 - Création/modification/suppression d'utilisateurs
 - Interface console interactive
+- Interface graphique JavaFX (si JavaFX installé)
 
 ## 👥 Types d'utilisateurs
 
@@ -271,15 +295,9 @@ mvn test
 
 Ce projet est développé dans le cadre d'un cours d'architecture logicielle.
 
-## 🤝 Contribution
+## 🌐 Dépôt GitHub
 
-Pour contribuer au projet :
-
-1. Fork le repository
-2. Créer une branche pour votre fonctionnalité
-3. Commiter vos changements
-4. Pousser vers la branche
-5. Créer une Pull Request
+Le code source complet est disponible sur GitHub : [https://github.com/noreyni03/news-platform-php](https://github.com/noreyni03/news-platform-php)
 
 ## 📞 Support
 
