@@ -9,14 +9,15 @@ import jakarta.xml.ws.Service;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import com.actualite.client.ActualitePort;
 
 /**
  * Client SOAP pour communiquer avec le service web PHP
  */
 public class SoapClient {
     private static final Logger logger = LoggerFactory.getLogger(SoapClient.class);
-    private static final String SOAP_URL = "http://localhost/projet-actualite/backend/api/soap_server.php";
-    private static final String NAMESPACE_URI = "http://localhost/projet-actualite/backend/api/soap_server.php";
+    private static final String SOAP_URL = "http://localhost/news-platform-php/backend/api/soap_server.php";
+    private static final String NAMESPACE_URI = "http://localhost/news-platform-php/backend/api/soap_server.php";
     
     private final ObjectMapper objectMapper;
     private final Service service;

@@ -7,7 +7,7 @@ import jakarta.jws.WebService;
  * Interface Service Endpoint (SEI) correspondant au service SOAP PHP.
  * Les méthodes retournent des chaînes JSON que l'application parse ensuite.
  */
-@WebService(targetNamespace = "http://localhost/projet-actualite/backend/api/soap_server.php", name = "ActualitePort")
+@WebService(targetNamespace = "http://localhost/news-platform-php/backend/api/soap_server.php", name = "ActualitePort")
 public interface ActualitePort {
 
     @WebMethod
