@@ -46,7 +46,17 @@ CREATE DATABASE actualite_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 mysql -u root -p actualite_db < database/schema.sql
 ```
 
-### 2. Configuration PHP
+### 2. Préparation des utilisateurs (optionnel mais recommandé)
+
+Un script pratique permet de créer (ou réinitialiser) le compte **admin / password** :
+
+```bash
+php scripts/create_admin.php
+```
+
+Vous pouvez l'exécuter à tout moment si vous perdez le mot de passe administrateur.
+
+### 3. Configuration PHP
 
 ```bash
 # Installer les dépendances PHP
@@ -99,7 +109,15 @@ private const PASSWORD = '';
 
 ### Services Web
 
-#### API SOAP
+#### API SOAP (retours JSON)
+
+Toutes les fonctions SOAP renvoient désormais **une chaîne JSON** (type `xsd:string` dans le WSDL). Le client Java ou tout autre consommateur doit désérialiser cette chaîne pour obtenir un objet/Map.
+
+Exemple de réponse JSON :
+```json
+{"success":true,"user":{"id":1,"username":"admin","role":"admin"},"token":"..."}
+```
+
 
 **Authentification** :
 ```xml
@@ -135,11 +153,12 @@ private const PASSWORD = '';
 ### Application Java
 
 ```bash
-# Lancer l'application
-java -jar java-client/target/user-management-client-1.0.0.jar
+# se positionner à la racine du projet
+cd news-platform-php
 
-# Ou avec Maven
-mvn exec:java -Dexec.mainClass="com.actualite.client.UserManagementApp"
+# Et taper la commande
+java --add-opens java.base/java.lang=ALL-UNNAMED \
+-jar java-client/target/user-management-client-1.0.0.jar
 ```
 
 **Fonctionnalités** :

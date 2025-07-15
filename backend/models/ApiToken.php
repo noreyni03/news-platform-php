@@ -48,17 +48,20 @@ class ApiToken {
     
     public function delete($id) {
         $stmt = $this->db->prepare("DELETE FROM auth_tokens WHERE id = ?");
-        return $stmt->execute([$id]);
+        $stmt->execute([$id]);
+        return $stmt->rowCount();
     }
     
     public function deleteByToken($token) {
         $stmt = $this->db->prepare("DELETE FROM auth_tokens WHERE token = ?");
-        return $stmt->execute([$token]);
+        $stmt->execute([$token]);
+        return $stmt->rowCount();
     }
     
     public function deleteExpired() {
         $stmt = $this->db->prepare("DELETE FROM auth_tokens WHERE expires_at IS NOT NULL AND expires_at < NOW()");
-        return $stmt->execute();
+        $stmt->execute();
+        return $stmt->rowCount();
     }
     
     public function validateToken($token) {
