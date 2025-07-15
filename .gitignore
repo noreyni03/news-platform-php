@@ -1,1 +1,17 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Maven
+target/
+
+# Fichiers binaires Java
+*.class
+*.jar
+
+# Autres fichiers système ou IDE
+.DS_Store
+
+
 commit-projet.sh
