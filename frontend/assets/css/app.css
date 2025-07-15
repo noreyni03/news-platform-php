@@ -1,5 +1,0 @@
-/* Project fallback stylesheet: app.css
-   Provides minimal presentation when external CSS CDNs are unavailable.
-   Generated automatically – keep in sync if overriding styles. */
-
-@import url('mvp.css'); /* reuse same rules */
